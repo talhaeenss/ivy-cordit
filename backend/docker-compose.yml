@@ -1,0 +1,60 @@
+services:
+  mongo:
+    image: mongo:latest
+    volumes:
+      - ./mongodb_data:/data/db # Windows için klasör içine saklayacak hale getirdim
+    networks:
+      - cordit-network
+
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --dev
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+    ports:
+      - "7880:7880" # Dışarıya kapı açtık
+    networks:
+      - cordit-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+      - livekit
+    environment:
+      DATABASE_URL: mongodb://mongo:27017/cordit
+      LIVEKIT_API_URL: http://livekit:7880
+      LIVEKIT_URL: ${LIVEKIT_URL}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      ALLOWED_ORIGINS: ${FRONTEND_URL}
+      CREATE_ADMIN_INITIALLY: "true"
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
+    ports:
+      - "3001:3000" # Backend'i 3001'e aldım ki frontend ile çakışmasın
+    networks:
+      - cordit-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
+        NEXT_PUBLIC_LIVEKIT_URL: ${LIVEKIT_URL}
+    depends_on:
+      - backend
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:3000
+    ports:
+      - "3000:3000" # UI artık buradan gelecek
+    networks:
+      - cordit-network
+
+networks:
+  cordit-network:
+    driver: bridge
