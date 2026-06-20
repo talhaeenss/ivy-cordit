@@ -2,7 +2,7 @@
 
 Modern, neobrutalist tasarımlı gerçek zamanlı sohbet ve sesli görüşme uygulaması.
 
-![Cordit Application Preview](screen/screen.gif)
+![Cordit Application Preview](screenshot/screen.gif)
 
 ## Özellikler
 
