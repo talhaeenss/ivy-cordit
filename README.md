@@ -2,6 +2,8 @@
 
 Modern, neobrutalist tasarımlı gerçek zamanlı sohbet ve sesli görüşme uygulaması.
 
+![Cordit Application Preview](screen/screen.gif)
+
 ## Özellikler
 
 - 💬 **Gerçek Zamanlı Mesajlaşma** - Socket.IO ile anlık mesajlaşma
